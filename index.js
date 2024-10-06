@@ -37,38 +37,10 @@ app.listen(port, () => {
   console.log('\x1b[36m[ SERVER ]\x1b[0m', '\x1b[32m SH : http://localhost:' + port + ' ✅\x1b[0m');
 });
 
-// Translations for "Watching" in different languages
-const statusTranslations = {
-  'en-US': 'Watching',
-  'es-ES': 'Viendo',
-  'fr-FR': 'Regarde',
-  'de-DE': 'Schaut',
-  'hu-HU': 'Nézi',
-};
-
-const statusTypes = ['dnd', 'idle'];
+const statusMessages = ["Watching: magyarország"];
+const statusTypes = [ 'dnd', 'idle'];
+let currentStatusIndex = 0;
 let currentTypeIndex = 0;
-
-// Function to get the translation based on the locale
-function getStatusTranslation(locale) {
-  return statusTranslations[locale] || statusTranslations['en-US']; // Default to English
-}
-
-// Function to update the bot's status
-function updateStatus() {
-  const userLocale = 'en-US'; // Replace this with actual locale detection if available
-  const watchingTranslation = getStatusTranslation(userLocale);
-  const statusMessage = `${watchingTranslation} you`; // "Watching you" in the user's language
-  const currentType = statusTypes[currentTypeIndex];
-
-  client.user.setPresence({
-    activities: [{ name: statusMessage, type: ActivityType.Watching }],
-    status: currentType,
-  });
-
-  console.log('\x1b[33m[ STATUS ]\x1b[0m', `Updated status to: ${statusMessage} (${currentType})`);
-  currentTypeIndex = (currentTypeIndex + 1) % statusTypes.length;
-}
 
 async function login() {
   try {
@@ -82,6 +54,18 @@ async function login() {
   }
 }
 
+function updateStatus() {
+  const currentStatus = statusMessages[currentStatusIndex];
+  const currentType = statusTypes[currentTypeIndex];
+  client.user.setPresence({
+    activities: [{ name: currentStatus, type: ActivityType.Custom }],
+    status: currentType,
+  });
+  console.log('\x1b[33m[ STATUS ]\x1b[0m', `Updated status to: ${currentStatus} (${currentType})`);
+  currentStatusIndex = (currentStatusIndex + 1) % statusMessages.length;
+  currentTypeIndex = (currentTypeIndex + 1) % statusTypes.length;
+}
+
 function heartbeat() {
   setInterval(() => {
     console.log('\x1b[35m[ HEARTBEAT ]\x1b[0m', `Bot is alive at ${new Date().toLocaleTimeString()}`);
@@ -91,11 +75,11 @@ function heartbeat() {
 client.once('ready', () => {
   console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[34mPing: ${client.ws.ping} ms \x1b[0m`);
   updateStatus();
-  setInterval(updateStatus, 10000); // Updates status every 10 seconds
+  setInterval(updateStatus, 10000);
   heartbeat();
 });
 
-login();  
+login();
 /*
 
 ☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆
