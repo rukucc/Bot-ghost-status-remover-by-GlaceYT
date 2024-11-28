@@ -38,7 +38,7 @@ app.listen(port, () => {
 });
 
 const statusMessages = ["Fidesz"];
-const statusTypes = [ 'dnd', 'idle'];
+const statusTypes = [ 'online'];
 let currentStatusIndex = 0;
 let currentTypeIndex = 0;
 
